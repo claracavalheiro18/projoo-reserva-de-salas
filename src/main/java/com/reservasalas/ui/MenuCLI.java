@@ -11,6 +11,10 @@ import com.reservasalas.repository.ReservaRepository;
 import com.reservasalas.service.ReservaService;
 import com.reservasalas.strategy.PoliticaPrimeiroAReservar;
 import com.reservasalas.strategy.PoliticaPrioridadeDocente;
+import com.reservasalas.visitor.IReservaVisitor;
+import com.reservasalas.visitor.RecurrenceRule;
+import com.reservasalas.visitor.RecurrenceVisitor;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -18,6 +22,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Interface de Linha de Comando (CLI).
+ * Ponto de entrada principal da aplicação.
+ */
 public class MenuCLI {
 
     private static final DateTimeFormatter FMT_HORA = DateTimeFormatter.ofPattern("HH:mm");
@@ -53,6 +61,7 @@ public class MenuCLI {
                 case 6 -> trocarPolitica();
                 case 7 -> trocarUsuario();
                 case 8 -> decoratorDemo();
+                case 9 -> reservaRecorrenteDemo();
                 case 0 -> sair = true;
                 default -> System.out.println("  ⚠  Opção inválida.");
             }
@@ -75,6 +84,7 @@ public class MenuCLI {
         System.out.println("│  6. Trocar política de reserva           │");
         System.out.println("│  7. Trocar usuário                       │");
         System.out.println("│  8. Demo Decorator (extras na reserva)   │");
+        System.out.println("│  9. Criar reserva recorrente (Visitor)   │");
         System.out.println("│  0. Sair                                 │");
         System.out.println("└─────────────────────────────────────────┘");
     }
@@ -241,4 +251,57 @@ public class MenuCLI {
         System.out.println("  " + titulo);
         System.out.println("══════════════════════════════════════════");
     }
+
+    private void reservaRecorrenteDemo() {
+        cabecalho("CRIAR RESERVA RECORRENTE (Visitor)");
+
+        // 1. Seleciona a reserva base (já existente)
+        System.out.print("  ID da reserva base: ");
+        String id = sc.nextLine().trim().toUpperCase();
+
+        repo.buscarReservaPorId(id).ifPresentOrElse(reservaBase -> {
+
+            // 2. Frequência
+            System.out.println("  Frequência:");
+            System.out.println("    1. Semanal (WEEKLY)");
+            System.out.println("    2. Mensal  (MONTHLY)");
+            int freqOp = lerInt("Escolha");
+            com.reservasalas.visitor.Frequency freq =
+                    (freqOp == 2) ? com.reservasalas.visitor.Frequency.MONTHLY
+                                  : com.reservasalas.visitor.Frequency.WEEKLY;
+
+            // 3. Intervalo
+            int intervalo = lerInt("Intervalo (1 = toda semana/mês, 2 = a cada 2, ...)");
+            if (intervalo <= 0) intervalo = 1;
+
+            // 4. Ocorrências
+            int ocorrencias = lerInt("Quantas ocorrências (além da reserva base)");
+            if (ocorrencias <= 0) {
+                System.out.println("  ⚠  Número de ocorrências inválido.");
+                return;
+            }
+
+            // 5. Executa o Visitor
+            com.reservasalas.visitor.RecurrenceRule rule =
+                    new com.reservasalas.visitor.RecurrenceRule(freq, intervalo, ocorrencias + 1);
+
+            IReservaVisitor visitor = new RecurrenceVisitor();
+            java.util.List<java.util.List<String>> resultado =
+                    visitor.visit(service, reservaBase, rule);
+
+            // 6. Exibe resultado
+            java.util.List<String> sucessos = resultado.get(0);
+            java.util.List<String> falhas   = resultado.get(1);
+
+            System.out.println("\n  ✅  Reservas criadas com sucesso (" + sucessos.size() + "):");
+            sucessos.forEach(s -> System.out.println("     • " + s));
+
+            if (!falhas.isEmpty()) {
+                System.out.println("\n  ❌  Reservas com conflito (" + falhas.size() + "):");
+                falhas.forEach(f -> System.out.println("     • " + f));
+            }
+
+        }, () -> System.out.println("  Reserva não encontrada."));
+    }
+
 }

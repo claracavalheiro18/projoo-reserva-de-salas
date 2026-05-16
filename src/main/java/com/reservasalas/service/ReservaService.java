@@ -12,16 +12,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
- // Serviço principal de  criação, modificacão e cancelamento de reservs
- // RF-02: criar, modificar, cancelar
- // RF-03: detectar e impedir colisões 
- //RF-04: notificar envolvidos 
- 
+/**
+ * Serviço principal – orquestra criação, modificação e cancelamento de reservas.
+ * RF-02: Criar, modificar, cancelar.
+ * RF-03: Detectar e impedir colisões (via Strategy).
+ * RF-04: Notificar envolvidos (via Observer no repositório).
+ */
 public class ReservaService {
 
     private final ReservaRepository repo;
-    private PoliticaDeReserva politica;  
+    private PoliticaDeReserva politica;  // Strategy – trocável em runtime
 
     public ReservaService(ReservaRepository repo, PoliticaDeReserva politica) {
         this.repo    = repo;
@@ -36,6 +36,7 @@ public class ReservaService {
 
     public PoliticaDeReserva getPolitica() { return politica; }
 
+    // ── RF-02: Criar ──────────────────────────────────────────────────────────
     public Reserva criarReserva(Sala sala, Usuario usuario, LocalDateTime inicio, LocalDateTime fim) {
         validarIntervalo(inicio, fim);
         List<Reserva> ativas = repo.buscarPorSala(sala.getId());
@@ -53,6 +54,7 @@ public class ReservaService {
         return nova;
     }
 
+    // ── RF-02: Modificar ──────────────────────────────────────────────────────
     public Reserva modificarReserva(String reservaId, LocalDateTime novoInicio, LocalDateTime novoFim, Usuario solicitante) {
         Reserva reserva = buscarOuLancar(reservaId);
         validarProprietario(reserva, solicitante);
@@ -74,20 +76,25 @@ public class ReservaService {
                 String.format("Horário alterado para %s → %s", novoInicio, novoFim));
         return reserva;
     }
+
+    // ── RF-02: Cancelar ───────────────────────────────────────────────────────
     public void cancelarReserva(String reservaId, Usuario solicitante) {
         Reserva reserva = buscarOuLancar(reservaId);
         validarProprietario(reserva, solicitante);
         cancelarInterno(reserva, "Cancelada pelo usuário " + solicitante.getNome());
     }
 
+    // ── RF-01: Listar disponíveis ─────────────────────────────────────────────
     public List<Sala> listarSalasDisponiveis(LocalDateTime inicio, LocalDateTime fim) {
         return repo.listarSalasDisponiveis(inicio, fim);
     }
 
+    // ── RF-05: Relatório ─────────────────────────────────────────────────────
     public List<Reserva> relatorioReservasDia(LocalDate data) {
         return repo.buscarPorData(data);
     }
 
+    // ── Auxiliares ────────────────────────────────────────────────────────────
     private void cancelarInterno(Reserva reserva, String motivo) {
         reserva.setStatus(Reserva.Status.CANCELADA);
         repo.salvarReserva(reserva);

@@ -1,10 +1,18 @@
 package com.reservasalas.strategy;
+
 import com.reservasalas.model.Reserva;
 import com.reservasalas.model.Sala;
 import com.reservasalas.model.Usuario;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Política "Prioridade para Docente".
+ * - Docente pode sobrepor reserva de estudante (a reserva anterior é cancelada pelo serviço).
+ * - Estudante NÃO pode sobrepor reserva de docente nem de outro estudante.
+ * - Docente NÃO pode sobrepor reserva de outro docente.
+ */
 public class PoliticaPrioridadeDocente implements PoliticaDeReserva {
 
     @Override
@@ -29,14 +37,14 @@ public class PoliticaPrioridadeDocente implements PoliticaDeReserva {
             }
 
             if (titularEhDocente) {
-                // Docente vs Docente = rejeita
+                // Docente vs Docente → rejeita
                 throw new IllegalStateException(
                         String.format("Conflito: sala '%s' já reservada pelo docente %s. " +
                                         "Docentes não podem sobrepor reservas de outros docentes.",
                                 sala.getNome(), r.getUsuario().getNome()));
             }
 
-            //  sinaliza via exceção especial para o serviço tratar
+            // Docente sobrepõe estudante → sinaliza via exceção especial para o serviço tratar
             throw new PreempcaoNecessariaException(r,
                     "Docente " + solicitante.getNome() + " solicitou a sala — reserva de estudante será cancelada.");
         }

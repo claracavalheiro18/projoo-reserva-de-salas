@@ -1,6 +1,12 @@
 package com.reservasalas.observer;
+
 import com.reservasalas.model.Reserva;
 import com.reservasalas.model.Usuario;
+
+/**
+ * Observer concreto: simula envio de e-mail/SMS ao usuário envolvido na reserva.
+ * Usa modo PUSH (recebe o evento completo diretamente).
+ */
 public class NotificadorUsuario implements ReservaObserver {
     private final Usuario usuario;
 

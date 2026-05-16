@@ -2,6 +2,10 @@ package com.reservasalas.observer;
 
 import com.reservasalas.model.Reserva;
 
+/**
+ * Observer – contrato para todos os assinantes de eventos de reserva.
+ * Suporta tanto push (recebe o evento completo) quanto pull (pode buscar detalhes via repositório).
+ */
 public interface ReservaObserver {
 
     /**

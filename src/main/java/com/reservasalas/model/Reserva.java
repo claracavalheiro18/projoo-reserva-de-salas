@@ -1,4 +1,5 @@
 package com.reservasalas.model;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -23,6 +24,7 @@ public class Reserva {
         this.criadaEm = LocalDateTime.now();
     }
 
+    // Getters
     public String getId()              { return id; }
     public Sala getSala()              { return sala; }
     public Usuario getUsuario()        { return usuario; }
@@ -30,6 +32,8 @@ public class Reserva {
     public LocalDateTime getFim()      { return fim; }
     public Status getStatus()          { return status; }
     public LocalDateTime getCriadaEm() { return criadaEm; }
+
+    // Setters para modificação
     public void setInicio(LocalDateTime inicio) { this.inicio = inicio; }
     public void setFim(LocalDateTime fim)        { this.fim = fim; }
     public void setStatus(Status status)         { this.status = status; }

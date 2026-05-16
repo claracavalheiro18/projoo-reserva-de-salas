@@ -7,10 +7,14 @@ import com.reservasalas.model.Usuario;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Strategy – define a política de detecção/resolução de colisões.
+ * Pode ser trocada em tempo de execução via ReservaService.
+ */
 public interface PoliticaDeReserva {
 
     /**
-     * Verifica se é permitido criar/alterar uma reserva dado o contexto atual
+     * Verifica se é permitido criar/alterar uma reserva dado o contexto atual.
      *
      * @param sala          Sala desejada
      * @param solicitante   Usuário que faz a requisição

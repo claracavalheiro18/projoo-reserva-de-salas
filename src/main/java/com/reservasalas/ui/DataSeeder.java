@@ -1,4 +1,5 @@
 package com.reservasalas.ui;
+
 import com.reservasalas.factory.*;
 import com.reservasalas.model.*;
 import com.reservasalas.observer.NotificadorUsuario;
@@ -8,6 +9,9 @@ import com.reservasalas.repository.ReservaRepository;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Popula o repositório com dados iniciais de demonstração.
+ */
 public class DataSeeder {
 
     private static final List<Usuario> USUARIOS = List.of(
@@ -20,7 +24,7 @@ public class DataSeeder {
     public static List<Usuario> usuarios() { return USUARIOS; }
 
     public static void popular(ReservaRepository repo) {
-    
+        // ── Salas via Factory Method ──────────────────────────────────────────
         SalaFactory indFac  = new SalaIndividualFactory();
         SalaFactory grpFac  = new SalaGrupoFactory();
         SalaFactory labFac  = new SalaLaboratorioFactory();
@@ -31,6 +35,8 @@ public class DataSeeder {
         repo.adicionarSala(grpFac.criarSala("G02", "Sala Beta", 12, "Bloco B – 2º Andar", null));
         repo.adicionarSala(labFac.criarSala("L01", "Lab Inf",   20, "Bloco C – Térreo",   "Informática"));
         repo.adicionarSala(labFac.criarSala("L02", "Lab Quim",  16, "Bloco C – 1º Andar", "Química"));
+
+        // ── Observers ─────────────────────────────────────────────────────────
         ServicoRelatorio relatorio = new ServicoRelatorio(repo);
         repo.assinar(relatorio);
         USUARIOS.forEach(u -> repo.assinar(new NotificadorUsuario(u)));

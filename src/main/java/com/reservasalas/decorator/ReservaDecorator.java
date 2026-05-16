@@ -1,6 +1,11 @@
 package com.reservasalas.decorator;
 
-import com.reservasalas.model.Reserva;//bonus do exs 
+import com.reservasalas.model.Reserva;
+
+/**
+ * Decorator base – envolve uma Reserva para adicionar funcionalidades extras.
+ * Extensão opcional (bônus).
+ */
 public abstract class ReservaDecorator {
     protected final Reserva reserva;
 

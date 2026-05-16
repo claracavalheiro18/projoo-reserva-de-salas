@@ -1,22 +1,28 @@
 package com.reservasalas.repository;
+
 import com.reservasalas.model.Reserva;
 import com.reservasalas.model.Sala;
 import com.reservasalas.observer.ReservaObserver;
 import com.reservasalas.observer.ReservaSubject;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * Singleton thread-safe – repositório central em memória.
+ * Também implementa ReservaSubject (Observer) para propagar eventos.
+ * RF-01: Listar salas disponíveis em um intervalo de datas.
+ */
 public class ReservaRepository implements ReservaSubject {
+
+    // ── Singleton ────────────────────────────────────────────────────────────
     private static volatile ReservaRepository instancia;
 
     private ReservaRepository() {}
 
-    /**
-     * @return
-     */
     public static ReservaRepository getInstance() {
         if (instancia == null) {
             synchronized (ReservaRepository.class) {
@@ -27,9 +33,13 @@ public class ReservaRepository implements ReservaSubject {
         }
         return instancia;
     }
+
+    // ── Estado ───────────────────────────────────────────────────────────────
     private final Map<String, Sala>    salas    = new ConcurrentHashMap<>();
     private final Map<String, Reserva> reservas = new ConcurrentHashMap<>();
     private final List<ReservaObserver> observers = Collections.synchronizedList(new ArrayList<>());
+
+    // ── Salas ─────────────────────────────────────────────────────────────────
     public void adicionarSala(Sala sala) {
         salas.put(sala.getId(), sala);
     }
@@ -81,6 +91,8 @@ public class ReservaRepository implements ReservaSubject {
                 .sorted(Comparator.comparing(Reserva::getInicio))
                 .collect(Collectors.toList());
     }
+
+    // ── Observer Subject ─────────────────────────────────────────────────────
     @Override
     public void assinar(ReservaObserver observer) {
         observers.add(observer);
@@ -102,7 +114,7 @@ public class ReservaRepository implements ReservaSubject {
         }
     }
 
-    //  observers pra uso interno pelo serviço
+    // Expõe observers para uso interno pelo serviço
     public List<ReservaObserver> getObservers() {
         synchronized (observers) {
             return new ArrayList<>(observers);

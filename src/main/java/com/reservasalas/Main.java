@@ -7,7 +7,16 @@ import com.reservasalas.strategy.PoliticaPrimeiroAReservar;
 import com.reservasalas.ui.DataSeeder;
 import com.reservasalas.ui.MenuCLI;
 
-
+/**
+ * Ponto de entrada da aplicação Reserva de Salas de Estudo.
+ *
+ * Padrões implementados:
+ *  • Factory Method  – SalaFactory e subclasses (SalaIndividualFactory, SalaGrupoFactory, SalaLaboratorioFactory)
+ *  • Strategy        – PoliticaDeReserva (PoliticaPrimeiroAReservar, PoliticaPrioridadeDocente)
+ *  • Observer        – ReservaSubject / ReservaObserver (NotificadorUsuario, ServicoRelatorio) com push e pull
+ *  • Singleton       – ReservaRepository (double-checked locking, thread-safe)
+ *  • Decorator       – ReservaDecorator (ComMultimidia, ComLimpeza) — extensão bônus
+ */
 public class Main {
     public static void main(String[] args) {
         // Singleton

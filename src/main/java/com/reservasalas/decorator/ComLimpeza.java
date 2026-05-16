@@ -1,6 +1,8 @@
 package com.reservasalas.decorator;
 
-import com.reservasalas.model.Reserva; // add limpeza 
+import com.reservasalas.model.Reserva;
+
+/** Decorator concreto: adiciona serviço de limpeza antes da reserva. */
 public class ComLimpeza extends ReservaDecorator {
 
     public ComLimpeza(Reserva reserva) {

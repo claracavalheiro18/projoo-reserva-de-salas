@@ -7,6 +7,10 @@ import com.reservasalas.model.Usuario;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Política "Primeiro a reservar" (FIFO).
+ * Qualquer conflito de horário resulta em rejeição — não importa o perfil do usuário.
+ */
 public class PoliticaPrimeiroAReservar implements PoliticaDeReserva {
 
     @Override

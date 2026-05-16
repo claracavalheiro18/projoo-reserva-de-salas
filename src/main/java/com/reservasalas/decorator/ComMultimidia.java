@@ -1,6 +1,8 @@
 package com.reservasalas.decorator;
 
-import com.reservasalas.model.Reserva; // add os materiais da sal
+import com.reservasalas.model.Reserva;
+
+/** Decorator concreto: adiciona equipamento multimídia (projetor, tela, etc.). */
 public class ComMultimidia extends ReservaDecorator {
     private final String equipamento;
 
