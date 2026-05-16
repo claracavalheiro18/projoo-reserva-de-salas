@@ -1,7 +1,7 @@
 # Reserva de Salas de Estudo
 
 Aplicação de gerenciamento de reservas de salas para um campus universitário.
-Projeto prático – Projeto de Software Orientado a Objetos – 2026-05-08.
+Projeto prático – Projeto de Software Orientado a Objetos
 
 ---
 
